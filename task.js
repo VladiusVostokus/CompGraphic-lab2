@@ -46,8 +46,7 @@ function main() {
         console.log(gl.getShaderInfoLog(fsShader));
     }
 
-    gl.clearColor(0.5, 0.2, 0.6, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    clearCanvas();
     
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
@@ -75,4 +74,14 @@ function main() {
     gl.enableVertexAttribArray(aColor);
 
     gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+    function clearCanvas() {
+        gl.clearColor(0.5, 0.2, 0.6, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+    }
+
+    const clearButton = document.getElementById('clear');
+    clearButton.addEventListener('click', () => {
+        clearCanvas();
+    });
 }
