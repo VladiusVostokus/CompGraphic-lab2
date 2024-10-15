@@ -84,4 +84,10 @@ function main() {
     clearButton.addEventListener('click', () => {
         clearCanvas();
     });
+
+    canvas.addEventListener('mousedown', (e) => {
+        const x = e.clientX;
+        const y = e.clientY;
+        console.log(x,y);
+    });
 }
