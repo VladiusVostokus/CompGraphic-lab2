@@ -106,8 +106,10 @@ function main() {
     });
 
     canvas.addEventListener('mousedown', (e) => {
-        const x = e.clientX;
-        const y = e.clientY;
+        const kx = canvas.width / 2;
+        const ky = canvas.height / 2;
+        const x = (e.clientX -  kx) / kx;
+        const y = -(e.clientY -  ky) / ky;;
         console.log(x,y);
     });
 }
