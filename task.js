@@ -80,9 +80,29 @@ function main() {
         gl.clear(gl.COLOR_BUFFER_BIT);
     }
 
+    let mode = '';
+
     const clearButton = document.getElementById('clear');
+    const pointButton = document.getElementById('point');
+    const triangleButton = document.getElementById('triangle');
+    const circleButton = document.getElementById('circle');
     clearButton.addEventListener('click', () => {
         clearCanvas();
+    });
+
+    pointButton.addEventListener('click', () => {
+        mode = 'p';
+        console.log(mode);
+    });
+
+    triangleButton.addEventListener('click', () => {
+        mode = 't';
+        console.log(mode);
+    });
+
+    circleButton.addEventListener('click', () => {
+        mode = 'c';
+        console.log(mode);
     });
 
     canvas.addEventListener('mousedown', (e) => {
