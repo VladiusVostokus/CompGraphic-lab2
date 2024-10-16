@@ -1,13 +1,14 @@
 'use strict';
 
 const vsSource = `#version 300 es
-in vec2 aPosition;
-in vec3 aColor;
+uniform vec2 uPosition;
+//in vec3 aColor;
 out vec3 vColor;
 
 void main() {
-    gl_Position = vec4(aPosition, 0.0, 1.0);
-    vColor = aColor;
+    gl_Position = vec4(uPosition, 0.0, 1.0);
+    gl_PointSize = 5.0;
+    vColor = vec3(1.0, 0.0, 0.0);
 }`;
 
 const fsSource = `#version 300 es
@@ -53,27 +54,7 @@ function main() {
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.useProgram(program);
 
-    const aPosition = gl.getAttribLocation(program, 'aPosition');
-    const aColor = gl.getAttribLocation(program,'aColor');
-
-
-    const bufferData = new Float32Array([
-        0.0,  0.5,          1,1,0,
-       -0.5, -0.5,          0,1,0,
-        0.5, -0.5,          0,1,1,  
-    ]);
-    const buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, bufferData, gl.STATIC_DRAW);
-
-
-    gl.vertexAttribPointer(aPosition, 2 , gl.FLOAT, false, 5 * 4, 0);
-    gl.vertexAttribPointer(aColor, 3 , gl.FLOAT, false, 5 * 4, 2 * 4);
-
-    gl.enableVertexAttribArray(aPosition);
-    gl.enableVertexAttribArray(aColor);
-
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    const uPosition = gl.getUniformLocation(program,'uPosition');
 
     function clearCanvas() {
         gl.clearColor(0.5, 0.2, 0.6, 1.0);
@@ -109,7 +90,8 @@ function main() {
         const kx = canvas.width / 2;
         const ky = canvas.height / 2;
         const x = (e.clientX -  kx) / kx;
-        const y = -(e.clientY -  ky) / ky;;
-        console.log(x,y);
+        const y = -(e.clientY -  ky) / ky;
+        gl.uniform2f(uPosition, x, y);
+        gl.drawArrays(gl.POINTS, 0, 1);
     });
 }
