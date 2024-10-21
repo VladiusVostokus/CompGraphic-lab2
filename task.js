@@ -44,7 +44,11 @@ function main() {
         console.log(gl.getShaderInfoLog(fsShader));
     }
 
-    clearCanvas();
+    let mode = '';
+    let pointsCount = 0;
+    let positions = [];
+    const bg = document.getElementById('bg');
+    clearCanvas(bg.value);
     
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
@@ -53,23 +57,30 @@ function main() {
 
     const uColor = gl.getUniformLocation(program,'uColor');
     const aPosition = gl.getAttribLocation(program, 'aPosition');
-    const positions = [];
     const buffer = gl.createBuffer();
 
-    function clearCanvas() {
-        gl.clearColor(0.5, 0.2, 0.6, 1.0);
-        gl.clear(gl.COLOR_BUFFER_BIT);
+    function hexToZeroOne(hex) {
+        let hexValue = hex.replace('#', '');
+        let r = parseInt(hexValue.substring(0, 2), 16) / 255;
+        let g = parseInt(hexValue.substring(2, 4), 16) / 255;
+        let b = parseInt(hexValue.substring(4, 6), 16) / 255;
+        return [r, g, b];
     }
 
-    let mode = '';
-    let pointsCount = 0;
+    function clearCanvas(bgHex) {
+        const color = hexToZeroOne(bgHex);
+        gl.clearColor(...color, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        positions = [];
+        pointsCount = 0;
+    }
 
     const clearButton = document.getElementById('clear');
     const pointButton = document.getElementById('point');
     const triangleButton = document.getElementById('triangle');
     const circleButton = document.getElementById('circle');
     clearButton.addEventListener('click', () => {
-        clearCanvas();
+        clearCanvas(bg.value);
     });
 
     pointButton.addEventListener('click', () => {
@@ -88,6 +99,7 @@ function main() {
     });
 
     canvas.addEventListener('mousedown', (e) => {
+        gl.clear(gl.COLOR_BUFFER_BIT);
         pointsCount++;
         const kx = canvas.width / 2;
         const ky = canvas.height / 2;
