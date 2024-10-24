@@ -54,7 +54,8 @@ function main() {
     let pointData = [];
     let triangleData = [];
     let circleData = [];
-    //let startDrawCircle = false;
+    let startDrawCircle = false;
+    const circleCoords = [];
     const bgColorSelector = document.getElementById('bg');
     const pointColorSelector = document.getElementById('color');
     clearCanvas(bgColorSelector.value);
@@ -74,6 +75,13 @@ function main() {
         let g = parseInt(hexValue.substring(2, 4), 16) / 255;
         let b = parseInt(hexValue.substring(4, 6), 16) / 255;
         return [r, g, b];
+    }
+
+    function calculateRadius(x1, y1, x2, y2) {
+        const xSquare = Math.pow(x1 - x2, 2);
+        const ySquare = Math.pow(y1 - y2, 2);
+        const radius = Math.sqrt(xSquare + ySquare)
+        return radius;
     }
 
     function clearCanvas(bgHex) {
@@ -115,12 +123,36 @@ function main() {
         const x = (e.clientX -  kx) / kx;
         const y = -(e.clientY -  ky) / ky;
         const pointColors = hexToZeroOne(pointColorSelector.value);
+
         if (mode == 'c') {
-            //startDrawCircle = true;
-            circlePointsCount++;
-            circleData.push(x);
-            circleData.push(y);
-            circleData.push(...pointColors)
+            if (startDrawCircle) {
+                const segments = 10;
+                circlePointsCount += segments + 1;
+                for (let i = 0; i < segments + 1; i++){
+                    const angle = (i / segments) * 2 * Math.PI;
+                    const x1 = circleCoords[0];
+                    const y1 = circleCoords[1];
+
+                    const x2 = x;
+                    const y2 = y;
+                    const radius = calculateRadius(x1 ,y1 ,x2, y2);
+                    const actualX2 = x1 + radius * Math.cos(angle);
+                    const actualY2 = y1 + radius * Math.sin(angle);
+                    circleData.push(actualX2);
+                    circleData.push(actualY2);
+                    circleData.push(...pointColors);
+                    startDrawCircle = false;
+                }
+            } 
+            else {
+                startDrawCircle = true;
+                circlePointsCount++;
+                circleCoords[0] = x;
+                circleCoords[1] = y;
+                circleData.push(x);
+                circleData.push(y);
+                circleData.push(...pointColors);
+            }
         }
 
         if (mode == 't') {
