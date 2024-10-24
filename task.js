@@ -140,8 +140,6 @@ function main() {
         gl.vertexAttribPointer(aPosition, 2 , gl.FLOAT, false, 5 * 4, 0);
         gl.vertexAttribPointer(aColor, 3 , gl.FLOAT, false, 5 * 4, 2 * 4);
 
-        if (trianglePointsCount % 3 === 0) {
-            gl.drawArrays(gl.TRIANGLES, 0, trianglePointsCount);
-        }
+        gl.drawArrays(gl.TRIANGLES, 0, trianglePointsCount);
     });
 }
