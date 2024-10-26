@@ -55,6 +55,14 @@ function main() {
         }
     }
 
+    class Triangle {
+        static trianglesPointsCount = 0;
+        static trianglesData = [];
+        static addTrianglePoint(x, y, color) {
+            this.trianglesData.push(x, y, ...color);
+        }
+    }
+
     class Circle {
         static isDraw = false;
         static segments = 15;
@@ -79,8 +87,6 @@ function main() {
     }
 
     let mode = '';
-    let trianglePointsCount = 0;
-    let triangleData = [];
     let circles = [];
     const bgColorSelector = document.getElementById('bg');
     const pointColorSelector = document.getElementById('color');
@@ -109,9 +115,9 @@ function main() {
         gl.clear(gl.COLOR_BUFFER_BIT);
         Point.pointsData = [];
         Point.pointsCount = 0;
-        triangleData = [];
+        Triangle.trianglesData = [];
+        Triangle.trianglesPointsCount = 0;
         circles = [];
-        trianglePointsCount = 0;
     }
 
     const clearButton = document.getElementById('clear');
@@ -162,10 +168,8 @@ function main() {
         }
 
         if (mode == 't') {
-            trianglePointsCount++;
-            triangleData.push(x);
-            triangleData.push(y);
-            triangleData.push(...pointColors);
+            Triangle.trianglesPointsCount++;
+            Triangle.addTrianglePoint(x ,y, pointColors)
         }
 
         if (mode == 'p') {
@@ -183,13 +187,13 @@ function main() {
         gl.enableVertexAttribArray(aColor);
         gl.drawArrays(gl.POINTS, 0, Point.pointsCount);
 
-        const trianglesBufferData = new Float32Array(triangleData);
+        const trianglesBufferData = new Float32Array(Triangle.trianglesData);
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
         gl.bufferData(gl.ARRAY_BUFFER, trianglesBufferData, gl.STATIC_DRAW);
         gl.vertexAttribPointer(aPosition, 2 , gl.FLOAT, false, 5 * 4, 0);
         gl.vertexAttribPointer(aColor, 3 , gl.FLOAT, false, 5 * 4, 2 * 4);
 
-        gl.drawArrays(gl.TRIANGLES, 0, trianglePointsCount);
+        gl.drawArrays(gl.TRIANGLES, 0, Triangle.trianglesPointsCount);
 
         for (const circle of circles) {
             const circlesBufferData = new Float32Array(circle.circleData);
