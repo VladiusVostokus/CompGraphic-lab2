@@ -143,10 +143,11 @@ function main() {
                 const segments = 10;
                 for (let i = 0; i < segments + 1; i++){
                     const angle = (i / segments) * 2 * Math.PI;
-                    const radius = circles[circles.length - 1].calculateRadius(x, y);
-                    const actualX2 = circles[circles.length - 1].x1 + radius * Math.cos(angle);
-                    const actualY2 = circles[circles.length - 1].y1 + radius * Math.sin(angle);
-                    circles[circles.length - 1].addSecondPoint(actualX2, actualY2, pointColors);
+                    const circle = circles[circles.length - 1];
+                    const radius = circle.calculateRadius(x, y);
+                    const actualX2 = circle.x1 + radius * Math.cos(angle);
+                    const actualY2 = circle.y1 + radius * Math.sin(angle);
+                    circle.addSecondPoint(actualX2, actualY2, pointColors);
                     startDrawCircle = false;
                 }
             } 
