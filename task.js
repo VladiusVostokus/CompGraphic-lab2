@@ -47,6 +47,14 @@ function main() {
         console.log(gl.getShaderInfoLog(fsShader));
     }
 
+    class Point {
+        static pointsCount = 0;
+        static pointsData = [];
+        static addPoint(x, y, color) {
+            this.pointsData.push(x, y, ...color);
+        }
+    }
+
     class Circle {
         static isDraw = false;
         static segments = 15;
@@ -71,9 +79,7 @@ function main() {
     }
 
     let mode = '';
-    let pointsCount = 0;
     let trianglePointsCount = 0;
-    let pointData = [];
     let triangleData = [];
     let circles = [];
     const bgColorSelector = document.getElementById('bg');
@@ -101,10 +107,10 @@ function main() {
         const color = hexToZeroOne(bgHex);
         gl.clearColor(...color, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT);
-        pointData = [];
+        Point.pointsData = [];
+        Point.pointsCount = 0;
         triangleData = [];
         circles = [];
-        pointsCount = 0;
         trianglePointsCount = 0;
     }
 
@@ -163,13 +169,11 @@ function main() {
         }
 
         if (mode == 'p') {
-            pointsCount++;
-            pointData.push(x);
-            pointData.push(y);
-            pointData.push(...pointColors);
+            Point.pointsCount++;
+            Point.addPoint(x, y, pointColors);
         }
 
-        const pointBufferData = new Float32Array(pointData);
+        const pointBufferData = new Float32Array(Point.pointsData);
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
         gl.bufferData(gl.ARRAY_BUFFER, pointBufferData, gl.STATIC_DRAW);
         gl.vertexAttribPointer(aPosition, 2 , gl.FLOAT, false, 5 * 4, 0);
@@ -177,7 +181,7 @@ function main() {
 
         gl.enableVertexAttribArray(aPosition);
         gl.enableVertexAttribArray(aColor);
-        gl.drawArrays(gl.POINTS, 0, pointsCount);
+        gl.drawArrays(gl.POINTS, 0, Point.pointsCount);
 
         const trianglesBufferData = new Float32Array(triangleData);
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
