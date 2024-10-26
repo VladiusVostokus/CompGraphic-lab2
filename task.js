@@ -47,15 +47,35 @@ function main() {
         console.log(gl.getShaderInfoLog(fsShader));
     }
 
+    class Circle {
+        constructor(x1, y1, color) {
+            this.x1 = x1;
+            this.y1 = y1;
+            this.circleData = [];
+            this.circleData.push(x1, y1, ...color);
+        }
+
+        calculateRadius(x2, y2) {
+            const xSquare = Math.pow(this.x1 - x2, 2);
+            const ySquare = Math.pow(this.y1 - y2, 2);
+            const radius = Math.sqrt(xSquare + ySquare)
+            return radius;
+        }
+
+        addSecondPoint(x2, y2, color) {
+            this.circleData.push(x2, y2, ...color);
+        }
+    }
+
     let mode = '';
     let pointsCount = 0;
     let trianglePointsCount = 0;
     let circlePointsCount = 0;
     let pointData = [];
     let triangleData = [];
-    let circleData = [];
     let startDrawCircle = false;
-    const circleCoords = [];
+    let circles = [];
+    let circlesCount = 0;
     const bgColorSelector = document.getElementById('bg');
     const pointColorSelector = document.getElementById('color');
     clearCanvas(bgColorSelector.value);
@@ -77,20 +97,14 @@ function main() {
         return [r, g, b];
     }
 
-    function calculateRadius(x1, y1, x2, y2) {
-        const xSquare = Math.pow(x1 - x2, 2);
-        const ySquare = Math.pow(y1 - y2, 2);
-        const radius = Math.sqrt(xSquare + ySquare)
-        return radius;
-    }
-
     function clearCanvas(bgHex) {
         const color = hexToZeroOne(bgHex);
         gl.clearColor(...color, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT);
         pointData = [];
         triangleData = [];
-        circleData = [];
+        circles = [];
+        circlesCount = 0;
         pointsCount = 0;
         trianglePointsCount = 0;
         circlePointsCount = 0;
@@ -127,31 +141,20 @@ function main() {
         if (mode == 'c') {
             if (startDrawCircle) {
                 const segments = 10;
-                circlePointsCount += segments + 1;
                 for (let i = 0; i < segments + 1; i++){
                     const angle = (i / segments) * 2 * Math.PI;
-                    const x1 = circleCoords[0];
-                    const y1 = circleCoords[1];
-
-                    const x2 = x;
-                    const y2 = y;
-                    const radius = calculateRadius(x1 ,y1 ,x2, y2);
-                    const actualX2 = x1 + radius * Math.cos(angle);
-                    const actualY2 = y1 + radius * Math.sin(angle);
-                    circleData.push(actualX2);
-                    circleData.push(actualY2);
-                    circleData.push(...pointColors);
+                    const radius = circles[circles.length - 1].calculateRadius(x, y);
+                    const actualX2 = circles[circles.length - 1].x1 + radius * Math.cos(angle);
+                    const actualY2 = circles[circles.length - 1].y1 + radius * Math.sin(angle);
+                    circles[circles.length - 1].addSecondPoint(actualX2, actualY2, pointColors);
                     startDrawCircle = false;
                 }
             } 
             else {
                 startDrawCircle = true;
-                circlePointsCount++;
-                circleCoords[0] = x;
-                circleCoords[1] = y;
-                circleData.push(x);
-                circleData.push(y);
-                circleData.push(...pointColors);
+                circlePointsCount = 12;
+                const circle = new Circle(x,y, pointColors);
+                circles.push(circle);
             }
         }
 
@@ -187,12 +190,13 @@ function main() {
 
         gl.drawArrays(gl.TRIANGLES, 0, trianglePointsCount);
 
-        const circlesBufferData = new Float32Array(circleData);
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.bufferData(gl.ARRAY_BUFFER, circlesBufferData, gl.STATIC_DRAW);
-        gl.vertexAttribPointer(aPosition, 2 , gl.FLOAT, false, 5 * 4, 0);
-        gl.vertexAttribPointer(aColor, 3 , gl.FLOAT, false, 5 * 4, 2 * 4);
-
-        gl.drawArrays(gl.TRIANGLE_FAN, 0, circlePointsCount);
+        for (const circle of circles) {
+            const circlesBufferData = new Float32Array(circle.circleData);
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, circlesBufferData, gl.STATIC_DRAW);
+            gl.vertexAttribPointer(aPosition, 2 , gl.FLOAT, false, 5 * 4, 0);
+            gl.vertexAttribPointer(aColor, 3 , gl.FLOAT, false, 5 * 4, 2 * 4);
+            gl.drawArrays(gl.TRIANGLE_FAN, 0, circlePointsCount);
+        }
     });
 }
