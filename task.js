@@ -48,6 +48,9 @@ function main() {
     }
 
     class Circle {
+        static isDraw = false;
+        static segments = 15;
+        static pointsCount = this.segments + 2;
         constructor(x1, y1, color) {
             this.x1 = x1;
             this.y1 = y1;
@@ -70,12 +73,9 @@ function main() {
     let mode = '';
     let pointsCount = 0;
     let trianglePointsCount = 0;
-    let circlePointsCount = 0;
     let pointData = [];
     let triangleData = [];
-    let startDrawCircle = false;
     let circles = [];
-    let circlesCount = 0;
     const bgColorSelector = document.getElementById('bg');
     const pointColorSelector = document.getElementById('color');
     clearCanvas(bgColorSelector.value);
@@ -104,10 +104,8 @@ function main() {
         pointData = [];
         triangleData = [];
         circles = [];
-        circlesCount = 0;
         pointsCount = 0;
         trianglePointsCount = 0;
-        circlePointsCount = 0;
     }
 
     const clearButton = document.getElementById('clear');
@@ -139,21 +137,19 @@ function main() {
         const pointColors = hexToZeroOne(pointColorSelector.value);
 
         if (mode == 'c') {
-            if (startDrawCircle) {
-                const segments = 10;
-                for (let i = 0; i < segments + 1; i++){
-                    const angle = (i / segments) * 2 * Math.PI;
+            if (Circle.isDraw) {
+                for (let i = 0; i < Circle.segments + 1; i++) {
+                    const angle = (i / Circle.segments) * 2 * Math.PI;
                     const circle = circles[circles.length - 1];
                     const radius = circle.calculateRadius(x, y);
                     const actualX2 = circle.x1 + radius * Math.cos(angle);
                     const actualY2 = circle.y1 + radius * Math.sin(angle);
                     circle.addSecondPoint(actualX2, actualY2, pointColors);
-                    startDrawCircle = false;
+                    Circle.isDraw = false;
                 }
             } 
             else {
-                startDrawCircle = true;
-                circlePointsCount = 12;
+                Circle.isDraw = true;
                 const circle = new Circle(x,y, pointColors);
                 circles.push(circle);
             }
@@ -197,7 +193,7 @@ function main() {
             gl.bufferData(gl.ARRAY_BUFFER, circlesBufferData, gl.STATIC_DRAW);
             gl.vertexAttribPointer(aPosition, 2 , gl.FLOAT, false, 5 * 4, 0);
             gl.vertexAttribPointer(aColor, 3 , gl.FLOAT, false, 5 * 4, 2 * 4);
-            gl.drawArrays(gl.TRIANGLE_FAN, 0, circlePointsCount);
+            gl.drawArrays(gl.TRIANGLE_FAN, 0, Circle.pointsCount);
         }
     });
 }
