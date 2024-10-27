@@ -142,10 +142,9 @@ function main() {
 
     canvas.addEventListener('mousedown', (e) => {
         gl.clear(gl.COLOR_BUFFER_BIT);
-        const kx = canvas.width / 2;
-        const ky = canvas.height / 2;
-        const x = (e.clientX -  kx) / kx;
-        const y = -(e.clientY -  ky) / ky;
+        const rect = canvas.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / canvas.width) * 2 - 1;
+        const y = -((e.clientY - rect.top) / canvas.height) * 2 + 1;
         const pointColors = hexToZeroOne(pointColorSelector.value);
 
         if (mode == 'c') {
