@@ -120,6 +120,14 @@ function main() {
         circles = [];
     }
 
+    function bindShapeData(buffer, shapeData) {
+        const bufferShapeData = new Float32Array(shapeData)
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, bufferShapeData, gl.STATIC_DRAW);
+        gl.vertexAttribPointer(aPosition, 2 , gl.FLOAT, false, 5 * 4, 0);
+        gl.vertexAttribPointer(aColor, 3 , gl.FLOAT, false, 5 * 4, 2 * 4);
+    }
+
     const clearButton = document.getElementById('clear');
     const pointButton = document.getElementById('point');
     const triangleButton = document.getElementById('triangle');
@@ -176,30 +184,17 @@ function main() {
             Point.addPoint(x, y, pointColors);
         }
 
-        const pointBufferData = new Float32Array(Point.pointsData);
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.bufferData(gl.ARRAY_BUFFER, pointBufferData, gl.STATIC_DRAW);
-        gl.vertexAttribPointer(aPosition, 2 , gl.FLOAT, false, 5 * 4, 0);
-        gl.vertexAttribPointer(aColor, 3 , gl.FLOAT, false, 5 * 4, 2 * 4);
+        bindShapeData(buffer, Point.pointsData);
 
         gl.enableVertexAttribArray(aPosition);
         gl.enableVertexAttribArray(aColor);
         gl.drawArrays(gl.POINTS, 0, Point.pointsCount);
 
-        const trianglesBufferData = new Float32Array(Triangle.trianglesData);
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-        gl.bufferData(gl.ARRAY_BUFFER, trianglesBufferData, gl.STATIC_DRAW);
-        gl.vertexAttribPointer(aPosition, 2 , gl.FLOAT, false, 5 * 4, 0);
-        gl.vertexAttribPointer(aColor, 3 , gl.FLOAT, false, 5 * 4, 2 * 4);
-
+        bindShapeData(buffer, Triangle.trianglesData);
         gl.drawArrays(gl.TRIANGLES, 0, Triangle.trianglesPointsCount);
 
         for (const circle of circles) {
-            const circlesBufferData = new Float32Array(circle.circleData);
-            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-            gl.bufferData(gl.ARRAY_BUFFER, circlesBufferData, gl.STATIC_DRAW);
-            gl.vertexAttribPointer(aPosition, 2 , gl.FLOAT, false, 5 * 4, 0);
-            gl.vertexAttribPointer(aColor, 3 , gl.FLOAT, false, 5 * 4, 2 * 4);
+            bindShapeData(buffer, circle.circleData)
             gl.drawArrays(gl.TRIANGLE_FAN, 0, Circle.pointsCount);
         }
     });
