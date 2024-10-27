@@ -99,6 +99,8 @@ function main() {
 
     const aColor = gl.getAttribLocation(program,'aColor');
     const aPosition = gl.getAttribLocation(program, 'aPosition');
+    gl.enableVertexAttribArray(aPosition);
+    gl.enableVertexAttribArray(aColor);
     const buffer = gl.createBuffer();
 
     function hexToZeroOne(hex) {
@@ -185,9 +187,6 @@ function main() {
         }
 
         bindShapeData(buffer, Point.pointsData);
-
-        gl.enableVertexAttribArray(aPosition);
-        gl.enableVertexAttribArray(aColor);
         gl.drawArrays(gl.POINTS, 0, Point.pointsCount);
 
         bindShapeData(buffer, Triangle.trianglesData);
