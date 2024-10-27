@@ -108,7 +108,7 @@ function main() {
     let mode = '';
     let circles = [];
 
-    function hexToZeroOne(hex) {
+    const hexToZeroOne = (hex) => {
         let hexValue = hex.replace('#', '');
         let r = parseInt(hexValue.substring(0, 2), 16) / 255;
         let g = parseInt(hexValue.substring(2, 4), 16) / 255;
@@ -116,7 +116,7 @@ function main() {
         return [r, g, b];
     }
 
-    function clearCanvas(bgHex) {
+    const clearCanvas = (bgHex) => {
         const color = hexToZeroOne(bgHex);
         gl.clearColor(...color, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT);
@@ -127,7 +127,7 @@ function main() {
         circles = [];
     }
 
-    function bindShapeData(buffer, shapeData) {
+    const bindShapeData = (buffer, shapeData) => {
         const bufferShapeData = new Float32Array(shapeData)
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
         gl.bufferData(gl.ARRAY_BUFFER, bufferShapeData, gl.STATIC_DRAW);
