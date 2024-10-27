@@ -153,14 +153,16 @@ function main() {
         mode = 'c';
     });
 
-    canvas.addEventListener('mousedown', (e) => {
-        gl.clear(gl.COLOR_BUFFER_BIT);
-        const rect = canvas.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / canvas.width) * 2 - 1;
-        const y = -((e.clientY - rect.top) / canvas.height) * 2 + 1;
-        const pointColors = hexToZeroOne(pointColorSelector.value);
-
-        if (mode == 'c') {
+    const modes = {
+        p: (x, y, color) => {
+            Point.pointsCount++;
+            Point.addPoint(x, y, color);
+        },
+        t: (x, y, color) => {
+            Triangle.trianglesPointsCount++;
+            Triangle.addTrianglePoint(x ,y, color);
+        },
+        c: (x, y, color) => {
             if (Circle.isDraw) {
                 for (let i = 0; i < Circle.segments + 1; i++) {
                     const angle = (i / Circle.segments) * 2 * Math.PI;
@@ -168,26 +170,28 @@ function main() {
                     const radius = circle.calculateRadius(x, y);
                     const actualX2 = circle.x1 + radius * Math.cos(angle);
                     const actualY2 = circle.y1 + radius * Math.sin(angle);
-                    circle.addSecondPoint(actualX2, actualY2, pointColors);
+                    circle.addSecondPoint(actualX2, actualY2, color);
                     Circle.isDraw = false;
                 }
             } 
             else {
                 Circle.isDraw = true;
-                const circle = new Circle(x,y, pointColors);
+                const circle = new Circle(x,y, color);
                 circles.push(circle);
             }
-        }
+        },
+    }
 
-        if (mode == 't') {
-            Triangle.trianglesPointsCount++;
-            Triangle.addTrianglePoint(x ,y, pointColors)
-        }
+    const action = (drawingMode, x ,y, color) => modes[drawingMode](x, y, color) || (() => {});
 
-        if (mode == 'p') {
-            Point.pointsCount++;
-            Point.addPoint(x, y, pointColors);
-        }
+    canvas.addEventListener('mousedown', (e) => {
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        const rect = canvas.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / canvas.width) * 2 - 1;
+        const y = -((e.clientY - rect.top) / canvas.height) * 2 + 1;
+        const pointColor = hexToZeroOne(pointColorSelector.value);
+
+        action(mode, x, y, pointColor);
 
         bindShapeData(buffer, Point.pointsData);
         gl.drawArrays(gl.POINTS, 0, Point.pointsCount);
