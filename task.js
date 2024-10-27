@@ -56,7 +56,7 @@ function main() {
     }
 
     class Triangle {
-        static trianglesPointsCount = 0;
+        static pointsCount = 0;
         static trianglesData = [];
         static addTrianglePoint(x, y, color) {
             this.trianglesData.push(x, y, ...color);
@@ -123,7 +123,7 @@ function main() {
         Point.pointsData = [];
         Point.pointsCount = 0;
         Triangle.trianglesData = [];
-        Triangle.trianglesPointsCount = 0;
+        Triangle.pointsCount = 0;
         circles = [];
     }
 
@@ -159,7 +159,7 @@ function main() {
             Point.addPoint(x, y, color);
         },
         t: (x, y, color) => {
-            Triangle.trianglesPointsCount++;
+            Triangle.pointsCount++;
             Triangle.addTrianglePoint(x ,y, color);
         },
         c: (x, y, color) => {
@@ -182,7 +182,10 @@ function main() {
         },
     }
 
-    const action = (drawingMode, x ,y, color) => modes[drawingMode](x, y, color) || (() => {});
+    const action = (drawingMode, x ,y, color) => {
+        const func = modes[drawingMode] || (() => {});
+        func(x, y, color);
+    }
 
     canvas.addEventListener('mousedown', (e) => {
         gl.clear(gl.COLOR_BUFFER_BIT);
@@ -197,7 +200,7 @@ function main() {
         gl.drawArrays(gl.POINTS, 0, Point.pointsCount);
 
         bindShapeData(buffer, Triangle.trianglesData);
-        gl.drawArrays(gl.TRIANGLES, 0, Triangle.trianglesPointsCount);
+        gl.drawArrays(gl.TRIANGLES, 0, Triangle.pointsCount);
 
         for (const circle of circles) {
             bindShapeData(buffer, circle.circleData)
