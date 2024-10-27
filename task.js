@@ -86,11 +86,12 @@ function main() {
         }
     }
 
-    let mode = '';
-    let circles = [];
     const bgColorSelector = document.getElementById('bg');
     const pointColorSelector = document.getElementById('color');
-    clearCanvas(bgColorSelector.value);
+    const clearButton = document.getElementById('clear');
+    const pointButton = document.getElementById('point');
+    const triangleButton = document.getElementById('triangle');
+    const circleButton = document.getElementById('circle');
     
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
@@ -101,7 +102,11 @@ function main() {
     const aPosition = gl.getAttribLocation(program, 'aPosition');
     gl.enableVertexAttribArray(aPosition);
     gl.enableVertexAttribArray(aColor);
+    
     const buffer = gl.createBuffer();
+
+    let mode = '';
+    let circles = [];
 
     function hexToZeroOne(hex) {
         let hexValue = hex.replace('#', '');
@@ -130,10 +135,8 @@ function main() {
         gl.vertexAttribPointer(aColor, 3 , gl.FLOAT, false, 5 * 4, 2 * 4);
     }
 
-    const clearButton = document.getElementById('clear');
-    const pointButton = document.getElementById('point');
-    const triangleButton = document.getElementById('triangle');
-    const circleButton = document.getElementById('circle');
+    clearCanvas(bgColorSelector.value);
+
     clearButton.addEventListener('click', () => {
         clearCanvas(bgColorSelector.value);
     });
